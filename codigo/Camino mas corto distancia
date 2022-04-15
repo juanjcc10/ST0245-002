@@ -112,7 +112,7 @@ def main():
     final = input()
     
     
-    print("La ruta mas rapida junto y su distancia es:")
+    print("La ruta con menor distancia y su distancia es:")
     
     grafo.dijkstra(inicio)
     
