@@ -77,7 +77,7 @@ class Grafo:
         
 def main():
     grafo = Grafo()
-    with open("datos.csv") as archivo:
+    with open("calles_de_medellin_con_acoso.csv") as archivo:
       lines = archivo.readlines( )
       array = []
     for i in lines:
