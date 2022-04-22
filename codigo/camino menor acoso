@@ -19,7 +19,7 @@ class Grafo:
         camino = []
         actual = b
         while actual != None:
-            camino.insert(0, self.vertices[actual].name)
+            camino.insert(0, self.vertices[actual].coordenadas)
             actual = self.vertices[actual].padre
         return [camino, self.vertices[b].distancia]
         
