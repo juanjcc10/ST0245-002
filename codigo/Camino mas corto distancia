@@ -19,7 +19,7 @@ class Grafo:
         camino = []
         actual = b
         while actual != None:
-            camino.insert(0, self.vertices[actual].name)
+            camino.insert(0, self.vertices[actual].coordenadas)
             actual = self.vertices[actual].padre
         return [camino, self.vertices[b].distancia]
         
@@ -77,7 +77,7 @@ class Grafo:
         
 def main():
     grafo = Grafo()
-    with open("calles_de_medellin_con_acoso.csv") as archivo:
+    with open("datos.csv") as archivo:
       lines = archivo.readlines( )
       array = []
     for i in lines:
@@ -87,7 +87,14 @@ def main():
         grafo.agregarVertices(array[i][1], array[i][0])
         
     for i in range(0, 68748):
-        if array[i][0] == '"Calle 60' and array[i][1] == 'Miranda"':
+      """
+      actual = array[i][2]
+      for i in range(0, 68748):
+        if array[i][1] == actual:
+          final = array[i][1]
+          break
+      """
+      if array[i][0] == '"Calle 60' and array[i][1] == 'Miranda"':
             
             if array[i+1][0] == '"Calle 60' and array[i+1][1] == 'Miranda"':
                 
@@ -95,11 +102,13 @@ def main():
             else:
                 grafo.agregarArista(array[i][2], array[i+1][1], float(array[i][4]))
                 
-        elif array[i+1][0] == '"Calle 60' and array[i+1][1] == 'Miranda"':
+      elif array[i+1][0] == '"Calle 60' and array[i+1][1] == 'Miranda"':
             
             grafo.agregarArista(array[i][1], array[i+1][2], float(array[i][3]))
-        else:
+      else:
             grafo.agregarArista(array[i][1], array[i+1][1], float(array[i][3]))
+            
+    grafo.agregarArista(array[68748][1], array[68748][1], float(array[68748][3]))
             
     grafo.agregarArista(array[68748][1], array[68748][1], float(array[68748][3]))
     
