@@ -1,6 +1,5 @@
 class vertice:
-    def __init__(self, coordenadas, name):
-        self.name = name
+    def __init__(self, coordenadas):
         self.coordenadas = coordenadas
         self.distancia = float('inf')
         self.padre = None
@@ -69,9 +68,9 @@ class Grafo:
         else:
             return False
         
-    def agregarVertices(self, coordenadas, name):
+    def agregarVertices(self, coordenadas):
         if coordenadas not in self.vertices:
-            self.vertices[coordenadas] = vertice(coordenadas, name)
+            self.vertices[coordenadas] = vertice(coordenadas)
            
   
         
@@ -84,33 +83,21 @@ def main():
       array.append(i.split(";"))
     
     for i in range(0, 68749):
-        grafo.agregarVertices(array[i][1], array[i][0])
+        grafo.agregarVertices(array[i][1])
+        grafo.agregarVertices(array[i][2])
         
-    for i in range(0, 68748):
-      """
-      actual = array[i][2]
-      for i in range(0, 68748):
-        if array[i][1] == actual:
-          final = array[i][1]
-          break
-      """
+    for i in range(0, 68749):
       if array[i][0] == '"Calle 60' and array[i][1] == 'Miranda"':
             
-            if array[i+1][0] == '"Calle 60' and array[i+1][1] == 'Miranda"':
+            grafo.agregarArista(array[i][2], array[i][3], float(array[i][4]))
+            if array[i][5] == "True":
+                grafo.agregarArista(array[i][3], array[i][2], float(array[i][4]))
                 
-                grafo.agregarArista(array[i][2], array[i+1][2], float(array[i][4]))
-            else:
-                grafo.agregarArista(array[i][2], array[i+1][1], float(array[i][4]))
-                
-      elif array[i+1][0] == '"Calle 60' and array[i+1][1] == 'Miranda"':
-            
-            grafo.agregarArista(array[i][1], array[i+1][2], float(array[i][3]))
       else:
-            grafo.agregarArista(array[i][1], array[i+1][1], float(array[i][3]))
+            grafo.agregarArista(array[i][1], array[i][2], float(array[i][3]))
+            if array[i][4] == "True":
+                grafo.agregarArista(array[i][2], array[i][1], float(array[i][3]))
             
-    grafo.agregarArista(array[68748][1], array[68748][1], float(array[68748][3]))
-            
-    grafo.agregarArista(array[68748][1], array[68748][1], float(array[68748][3]))
     
     print("Ingrese las Coordenadas de inicio con parentesis")
     
