@@ -96,7 +96,7 @@ def main():
 
 def camino(inicio, final):
     grafo = Grafo()
-    with open("calles.csv") as archivo:
+    with open("calles_de_medellin_con_acoso.csv") as archivo:
       lines = archivo.readlines( )
       array = []
     for i in lines:
@@ -165,7 +165,7 @@ def camino(inicio, final):
     
 def acoso(inicio, final):
     grafo = Grafo()
-    with open("datos.csv") as archivo:
+    with open("calles_de_medellin_con_acoso.csv") as archivo:
       lines = archivo.readlines( )
       array = []
     for i in lines:
