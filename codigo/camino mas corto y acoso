@@ -1,0 +1,229 @@
+import gmplot
+class vertice:
+    def __init__(self, coordenadas, acoso):
+        self.acoso = acoso
+        self.coordenadas = coordenadas
+        self.distancia = float('inf')
+        self.padre = None
+        self.visitado = False
+        self.vecinos = []
+        
+    def agregarVecinos(self, v, p):
+        if v not in self.vecinos:
+            self.vecinos.append([v, p])
+            
+class Grafo:
+    def __init__(self):
+        self.vertices = {}
+        
+    def camino(self, a, b):
+        camino = []
+        actual = b
+        while actual != None:
+            camino.insert(0, self.vertices[actual].coordenadas)
+            actual = self.vertices[actual].padre
+        return [camino, self.vertices[b].distancia]
+        
+            
+    def agregarArista(self, a, b, p):
+        if a in self.vertices and b in self.vertices:
+            self.vertices[a].agregarVecinos(b, p)
+            self.vertices[b].agregarVecinos(a, p)
+            
+    def imprimirGrafo(self):
+        for v in self.vertices:
+            print("La distancia del vertice " + str(self.vertices[v].name) + " es " + str(self.vertices[v].distancia) + " llegando desde " + str(self.vertices[v].padre))
+    
+    
+    def minimo(self, lista):
+        if len(lista) > 0:
+            m = self.vertices[lista[0]].distancia
+            v = lista[0]
+            for e in lista:
+                if m > self.vertices[e].distancia:
+                    m = self.vertices[e].distancia
+                    v = e
+            return v
+    
+    def dijkstra(self, a):
+        if a in self.vertices:
+            self.vertices[a].distancia = 0
+            actual = a
+            noVisitados = []
+            for v in self.vertices:
+                if v != a:
+                    self.vertices[v].distancia = float('inf')
+                self.vertices[v].padre = None
+                noVisitados.append(v)
+                
+            while len(noVisitados) > 0:
+                for vecino in self.vertices[actual].vecinos:
+                    if self.vertices[vecino[0]].visitado == False:
+                        if self.vertices[actual].distancia + float(vecino[1]) < self.vertices[vecino[0]].distancia:
+                            self.vertices[vecino[0]].distancia = self.vertices[actual].distancia + vecino[1]
+                            self.vertices[vecino[0]].padre = actual
+                            
+                self.vertices[actual].visitado = True
+                noVisitados.remove(actual)
+                
+                actual = self.minimo(noVisitados)
+        else:
+            return False
+        
+    def agregarVertices(self, coordenadas, acoso):
+        if coordenadas not in self.vertices:
+            self.vertices[coordenadas] = vertice(coordenadas, acoso)
+          
+  
+        
+def main():
+    print("Inrgrese 1 si es camino con menor distancia, o 2 si es camino con menos acoso")
+    
+    funcion = input()
+    
+    print("Ingrese las Coordenadas de inicio con parentesis")
+    
+    inicio = input()
+    
+    print("Ingrese las Coordenadas de parada con parentesis")
+    
+    final = input()
+    if funcion == "1":
+        camino(inicio, final)
+    elif funcion == "2":
+        acoso(inicio, final)
+    
+
+def camino(inicio, final):
+    grafo = Grafo()
+    with open("datos.csv") as archivo:
+      lines = archivo.readlines( )
+      array = []
+    for i in lines:
+      array.append(i.split(";"))
+    
+    for i in range(0, 68749):
+        
+        
+        if array[i][5] == '':
+           
+            grafo.agregarVertices(array[i][1], 0)
+            grafo.agregarVertices(array[i][2], 0)
+        else:
+            
+            grafo.agregarVertices(array[i][1], array[i][5])
+            grafo.agregarVertices(array[i][2], array[i][5])
+        
+    for i in range(0, 68749):
+        grafo.agregarArista(array[i][1], array[i][2], float(array[i][3]))
+        if array[i][4] == "True":
+            grafo.agregarArista(array[i][2], array[i][1], float(array[i][3]))
+            
+    
+    print("La ruta con menor distancia, su distancia es:")
+    
+    grafo.dijkstra(inicio)
+    
+    camino = grafo.camino(inicio, final)
+    distancia = 0.0
+    division = 0
+    for f in range(len(camino[0])):
+        distancia = distancia + float(grafo.vertices[camino[0][f]].acoso)
+        division +=1
+    distancia = distancia/float(division)
+    nuevoCamino = []
+    for i in range(len(camino[0])):
+        texto = camino[0][i]
+        texto = texto[1:]
+        texto = texto[:-1]
+        pos = texto.find(",")
+        coor1 = texto[:pos]
+        coor2 = texto[pos+2:]
+        nuevaCoor = coor2 + ", " + coor1
+        nuevoCamino.append(nuevaCoor)
+    arra1 = []
+    for i in range(len(nuevoCamino)):
+        primer = nuevoCamino[i]
+        pos =  primer.find(",")
+        num1 = primer[:pos]
+        num2 = primer[pos+2:]
+        arra1.append((float(num1),float(num2)))
+
+    
+        
+    apikey = '' # (your API key here)
+    gmap = gmplot.GoogleMapPlotter(6.2312125, -75.6101004, 13, apikey=apikey)
+    path = zip(*
+        arra1
+        )
+    
+    gmap.plot(*path, edge_width=7, color='purple')
+    gmap.draw('distancia.html')
+    print(arra1)
+    print(camino[1])
+    print(distancia)
+    
+def acoso(inicio, final):
+    grafo = Grafo()
+    with open("datos.csv") as archivo:
+      lines = archivo.readlines( )
+      array = []
+    for i in lines:
+      array.append(i.split(";"))
+    
+    for i in range(0, 68749):
+
+        grafo.agregarVertices(array[i][1], array[i][3])
+        grafo.agregarVertices(array[i][2], array[i][3])
+        
+    for i in range(0, 68749):
+     
+      if array[i][5] == '':
+            grafo.agregarArista(array[i][1], array[i][2], float(0))
+                
+      else:
+            grafo.agregarArista(array[i][1], array[i][2], float(array[i][5]))
+            if array[i][4] == "True":
+                grafo.agregarArista(array[i][2], array[i][1], float(array[i][5]))
+            
+
+    
+    
+    print("La ruta con menor distancia, su acoso es:")
+    
+    grafo.dijkstra(inicio)
+    
+    camino = grafo.camino(inicio, final)
+    distancia = 0.01
+    for f in range(len(camino[0])):
+        distancia = distancia + float(grafo.vertices[camino[0][f]].acoso)
+    nuevoCamino = []
+    for i in range(len(camino[0])):
+        texto = camino[0][i]
+        texto = texto[1:]
+        texto = texto[:-1]
+        pos = texto.find(",")
+        coor1 = texto[:pos]
+        coor2 = texto[pos+2:]
+        nuevaCoor = coor2 + ", " + coor1
+        nuevoCamino.append(nuevaCoor)
+    arra1 = []
+    for i in range(len(nuevoCamino)):
+        primer = nuevoCamino[i]
+        pos =  primer.find(",")
+        num1 = primer[:pos]
+        num2 = primer[pos+2:]
+        arra1.append((float(num1),float(num2)))
+        
+    apikey = '' # (your API key here)
+    gmap = gmplot.GoogleMapPlotter(6.2312125, -75.6101004, 13, apikey=apikey)
+    path = zip(*
+        arra1
+        )
+    
+    gmap.plot(*path, edge_width=7, color='purple')
+    gmap.draw('acoso.html')
+    print(arra1)
+    print(float(camino[1])/float(len(camino[0])))
+    print(distancia)
+main()
